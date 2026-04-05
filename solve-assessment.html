@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strategic Assessment Suite - Modules 2 & 3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      color: #e8e6e3;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    /* Home Screen */
+    .home-screen {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 4rem;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .brand-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 200;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #d4af37 0%, #f2d06b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .brand-subtitle {
+      font-size: 1.125rem;
+      color: rgba(232, 230, 227, 0.6);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .module-preview {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 16px;
+      padding: 3rem;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .module-preview::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .module-preview:hover {
+      transform: translateY(-8px);
+      border-color: rgba(212, 175, 55, 0.4);
+      box-shadow: 0 20px 60px rgba(212, 175, 55, 0.15);
+    }
+
+    .module-preview:hover::before {
+      opacity: 1;
+    }
+
+    .module-number {
+      font-size: 4rem;
+      font-weight: 200;
+      color: rgba(212, 175, 55, 0.3);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .module-preview h2 {
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: #d4af37;
+      margin-bottom: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .module-preview p {
+      color: rgba(232, 230, 227, 0.7);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .module-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      color: rgba(212, 175, 55, 0.6);
+      flex-wrap: wrap;
+    }
+
+    /* Module Container */
+    .module-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    /* Intro Styles */
+    .intro-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .module-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 20px;
+      font-size: 0.875rem;
+      color: #d4af37;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .intro-content h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      color: #d4af37;
+      margin-bottom: 0.5rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .tagline {
+      font-size: 1.125rem;
+      color: rgba(232, 230, 227, 0.6);
+      margin-bottom: 3rem;
+      font-weight: 300;
+    }
+
+    .scenario-box, .instructions, .scoring-info {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .scenario-box h3, .instructions h3, .scoring-info h4 {
+      color: #d4af37;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .scenario-box p, .instructions p {
+      color: rgba(232, 230, 227, 0.8);
+      line-height: 1.7;
+    }
+
+    .instructions ul, .scoring-info ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .instructions li, .scoring-info li {
+      color: rgba(232, 230, 227, 0.8);
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .instructions li::before, .scoring-info li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: #d4af37;
+    }
+
+    .scoring-info strong {
+      color: #d4af37;
+    }
+
+    /* Buttons */
+    button {
+      background: linear-gradient(135deg, #d4af37 0%, #f2d06b 100%);
+      color: #0a0e27;
+      border: none;
+      padding: 1rem 3rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-family: 'Inter', sans-serif;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .start-btn, .action-btn {
+      margin-top: 2rem;
+    }
+
+    /* Game Header */
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-left h2 {
+      color: #d4af37;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .phase-indicator {
+      color: rgba(232, 230, 227, 0.6);
+      font-size: 0.875rem;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .timer {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(212, 175, 55, 0.1);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .timer-value {
+      color: #d4af37;
+      font-size: 1.25rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .project-counter {
+      color: rgba(232, 230, 227, 0.8);
+      font-size: 1rem;
+    }
+
+    /* Board Layout */
+    .board-layout {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 2rem;
+      padding: 0 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .board-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stakeholders-panel h3, .projects-panel h3 {
+      color: #d4af37;
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stakeholders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .stakeholder-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .stakeholder-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .stakeholder-name {
+      color: #d4af37;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .stakeholder-role {
+      color: rgba(232, 230, 227, 0.5);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .influence-badge {
+      background: rgba(212, 175, 55, 0.15);
+      color: #d4af37;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .priorities strong {
+      color: rgba(232, 230, 227, 0.6);
+      font-size: 0.875rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .priority-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .priority-tag {
+      background: rgba(212, 175, 55, 0.1);
+      color: rgba(212, 175, 55, 0.8);
+      padding: 0.25rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+    }
+
+    .projects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .project-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .project-card:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .project-card.selected {
+      border-color: #d4af37;
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .project-card h4 {
+      color: #d4af37;
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-desc {
+      color: rgba(232, 230, 227, 0.6);
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .selection-indicator {
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(212, 175, 55, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d4af37;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .project-card.selected .selection-indicator {
+      background: #d4af37;
+      color: #0a0e27;
+    }
+
+    .impacts strong {
+      color: rgba(232, 230, 227, 0.6);
+      font-size: 0.875rem;
+      display: block;
+      margin-bottom: 0.75rem;
+    }
+
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .impact-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 6px;
+      font-size: 0.75rem;
+    }
+
+    .impact-item.positive {
+      border-left: 2px solid rgba(76, 175, 80, 0.5);
+    }
+
+    .impact-item.negative {
+      border-left: 2px solid rgba(244, 67, 54, 0.5);
+    }
+
+    .impact-label {
+      color: rgba(232, 230, 227, 0.6);
+    }
+
+    .impact-value {
+      color: #d4af37;
+      font-weight: 600;
+    }
+
+    .impact-item.negative .impact-value {
+      color: rgba(244, 67, 54, 0.8);
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: flex-end;
+      padding: 1.5rem 0;
+    }
+
+    /* Briefing Room Styles */
+    .briefing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .briefing-header h2 {
+      color: #d4af37;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+    }
+
+    .briefing-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem 3rem;
+    }
+
+    .briefing-section {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .briefing-section h3 {
+      color: #d4af37;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .briefing-section p {
+      color: rgba(232, 230, 227, 0.8);
+      line-height: 1.7;
+    }
+
+    .briefing-footer {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .read-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      color: rgba(232, 230, 227, 0.8);
+      user-select: none;
+    }
+
+    .read-checkbox input {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    /* Question View */
+    .question-header {
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      margin-bottom: 2rem;
+    }
+
+    .progress-info {
+      margin-bottom: 1rem;
+      color: rgba(232, 230, 227, 0.7);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(212, 175, 55, 0.2);
+      border-radius: 2px;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d4af37, #f2d06b);
+      transition: width 0.3s;
+    }
+
+    .question-timer {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .timer-label {
+      color: rgba(232, 230, 227, 0.6);
+    }
+
+    .question-timer .timer-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #d4af37;
+      min-width: 60px;
+    }
+
+    .question-timer .timer-value.urgent {
+      color: #ff5252;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .question-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .question-content h2 {
+      color: #d4af37;
+      font-size: clamp(1.25rem, 3vw, 1.5rem);
+      margin-bottom: 2rem;
+      line-height: 1.4;
+    }
+
+    .options-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: left;
+    }
+
+    .option-btn:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(8px);
+    }
+
+    .option-letter {
+      width: 48px;
+      height: 48px;
+      background: rgba(212, 175, 55, 0.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d4af37;
+      font-weight: 700;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .option-text {
+      color: rgba(232, 230, 227, 0.8);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Results Styles */
+    .results-header {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      margin-bottom: 3rem;
+    }
+
+    .results-header h2 {
+      color: #d4af37;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-bottom: 2rem;
+    }
+
+    .total-score {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .score-label {
+      color: rgba(232, 230, 227, 0.6);
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .score-value {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 300;
+      color: #d4af37;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .score-max {
+      color: rgba(232, 230, 227, 0.4);
+      font-size: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .results-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
+      gap: 2rem;
+    }
+
+    .result-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .result-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .result-card h3 {
+      color: #d4af37;
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-components {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .component {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      gap: 1rem;
+    }
+
+    .component span:first-child {
+      color: rgba(232, 230, 227, 0.7);
+    }
+
+    .component .value {
+      color: #d4af37;
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    .component.penalty .value {
+      color: rgba(244, 67, 54, 0.8);
+    }
+
+    .selected-projects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .project-summary {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 3px solid #d4af37;
+      border-radius: 6px;
+    }
+
+    .project-summary h4 {
+      color: #d4af37;
+      margin-bottom: 0.5rem;
+    }
+
+    .project-summary p {
+      color: rgba(232, 230, 227, 0.6);
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .analysis-text {
+      color: rgba(232, 230, 227, 0.8);
+      line-height: 1.7;
+    }
+
+    .grade {
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid;
+    }
+
+    .grade.excellent {
+      background: rgba(76, 175, 80, 0.1);
+      border-color: rgba(76, 175, 80, 0.5);
+    }
+
+    .grade.good {
+      background: rgba(255, 193, 7, 0.1);
+      border-color: rgba(255, 193, 7, 0.5);
+    }
+
+    .grade.needs-improvement {
+      background: rgba(244, 67, 54, 0.1);
+      border-color: rgba(244, 67, 54, 0.5);
+    }
+
+    .questions-review {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .review-item {
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      border-left: 4px solid;
+    }
+
+    .review-item.correct {
+      border-color: rgba(76, 175, 80, 0.5);
+    }
+
+    .review-item.incorrect {
+      border-color: rgba(244, 67, 54, 0.5);
+    }
+
+    .review-header {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .q-number {
+      color: #d4af37;
+      font-weight: 700;
+    }
+
+    .result-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .result-badge.correct {
+      background: rgba(76, 175, 80, 0.2);
+      color: rgba(76, 175, 80, 1);
+    }
+
+    .result-badge.incorrect {
+      background: rgba(244, 67, 54, 0.2);
+      color: rgba(244, 67, 54, 1);
+    }
+
+    .time-taken, .points-earned {
+      color: rgba(232, 230, 227, 0.6);
+      font-size: 0.875rem;
+    }
+
+    .review-question {
+      color: #d4af37;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .review-answer, .review-correct, .review-explanation {
+      margin-bottom: 0.75rem;
+      color: rgba(232, 230, 227, 0.7);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    .review-answer strong, .review-correct strong, .review-explanation strong {
+      color: rgba(232, 230, 227, 0.9);
+    }
+
+    /* Completion Screen */
+    .completion-screen {
+      text-align: center;
+      padding: 3rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .completion-screen h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: #d4af37;
+      margin-bottom: 3rem;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .final-results {
+      display: flex;
+      gap: 3rem;
+      margin-bottom: 3rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .module-result {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      padding: 2rem;
+      border-radius: 12px;
+      min-width: 250px;
+    }
+
+    .module-result h3 {
+      color: #d4af37;
+      margin-bottom: 1rem;
+      font-size: 1.125rem;
+    }
+
+    .module-result .score {
+      font-size: 3rem;
+      color: #d4af37;
+      font-weight: 300;
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .app-container {
+        padding: 1rem;
+      }
+
+      .brand-title {
+        font-size: 2rem;
+      }
+
+      .modules-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .module-preview {
+        padding: 2rem;
+      }
+
+      .game-header, .briefing-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .board-layout {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+      }
+
+      .results-grid {
+        padding: 0 1rem;
+      }
+
+      .final-results {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+    const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } = Recharts;
+
+    // Timer Hook
+    const useTimer = (duration, onComplete) => {
+      const [timeLeft, setTimeLeft] = useState(duration);
+      const [isActive, setIsActive] = useState(false);
+
+      useEffect(() => {
+        if (!isActive || timeLeft <= 0) {
+          if (timeLeft <= 0 && isActive) onComplete?.();
+          return;
+        }
+        const interval = setInterval(() => {
+          setTimeLeft(t => Math.max(0, t - 1));
+        }, 1000);
+        return () => clearInterval(interval);
+      }, [isActive, timeLeft, onComplete]);
+
+      const start = () => setIsActive(true);
+      const pause = () => setIsActive(false);
+      const reset = () => { setTimeLeft(duration); setIsActive(false); };
+
+      return { timeLeft, isActive, start, pause, reset };
+    };
+
+    // Module 2: The Alignment Board
+    const AlignmentBoard = ({ onComplete }) => {
+      const [phase, setPhase] = useState('intro');
+      const [score, setScore] = useState(null);
+      
+      const stakeholders = [
+        { id: 'ceo', name: 'CEO', role: 'Chief Executive Officer', influence: 10, priorities: ['Revenue Growth', 'Market Share', 'Innovation'] },
+        { id: 'cfo', name: 'CFO', role: 'Chief Financial Officer', influence: 9, priorities: ['Cost Reduction', 'ROI', 'Risk Management'] },
+        { id: 'cto', name: 'CTO', role: 'Chief Technology Officer', influence: 8, priorities: ['Tech Debt', 'Innovation', 'Scalability'] },
+        { id: 'cmo', name: 'CMO', role: 'Chief Marketing Officer', influence: 7, priorities: ['Brand Value', 'Customer Acquisition', 'Market Share'] },
+        { id: 'coo', name: 'COO', role: 'Chief Operations Officer', influence: 8, priorities: ['Efficiency', 'Quality', 'Cost Reduction'] }
+      ];
+
+      const projects = [
+        { id: 'p1', name: 'AI Integration', description: 'Implement AI across customer service', impacts: { 'Innovation': 9, 'Cost Reduction': 7, 'Tech Debt': -2, 'Efficiency': 8, 'Customer Acquisition': 6 } },
+        { id: 'p2', name: 'Market Expansion', description: 'Enter 3 new geographic markets', impacts: { 'Revenue Growth': 9, 'Market Share': 10, 'Brand Value': 7, 'Risk Management': -3, 'ROI': 5 } },
+        { id: 'p3', name: 'Infrastructure Rebuild', description: 'Modernize core systems', impacts: { 'Tech Debt': 10, 'Scalability': 9, 'Innovation': 6, 'Cost Reduction': -4, 'Efficiency': 7 } },
+        { id: 'p4', name: 'Cost Optimization', description: 'Reduce operational expenses by 20%', impacts: { 'Cost Reduction': 10, 'ROI': 8, 'Efficiency': 6, 'Quality': -2, 'Revenue Growth': -1 } },
+        { id: 'p5', name: 'Brand Refresh', description: 'Complete rebrand and marketing push', impacts: { 'Brand Value': 10, 'Customer Acquisition': 8, 'Market Share': 6, 'Cost Reduction': -5, 'Innovation': 3 } }
+      ];
+
+      const [selectedProjects, setSelectedProjects] = useState([]);
+      
+      const { timeLeft, isActive, start } = useTimer(300, () => {
+        calculateScore();
+        setPhase('results');
+      });
+
+      const calculateScore = useCallback(() => {
+        if (selectedProjects.length === 0) {
+          setScore({ total: 0, breakdown: {}, alignment: 0, strategic: 0 });
+          return;
+        }
+
+        let totalSatisfaction = 0;
+        let breakdown = {};
+
+        stakeholders.forEach(sh => {
+          let satisfaction = 0;
+          selectedProjects.forEach(projId => {
+            const proj = projects.find(p => p.id === projId);
+            sh.priorities.forEach(priority => {
+              const impact = proj.impacts[priority] || 0;
+              satisfaction += impact * (sh.influence / 10);
+            });
+          });
+          breakdown[sh.id] = Math.max(0, Math.min(100, satisfaction * 2));
+          totalSatisfaction += breakdown[sh.id] * (sh.influence / 10);
+        });
+
+        const uniqueImpacts = new Set();
+        selectedProjects.forEach(projId => {
+          const proj = projects.find(p => p.id === projId);
+          Object.keys(proj.impacts).forEach(k => uniqueImpacts.add(k));
+        });
+        const strategic = Math.min(30, uniqueImpacts.size * 3);
+
+        const penalty = selectedProjects.length > 3 ? (selectedProjects.length - 3) * 5 : 0;
+        const total = Math.max(0, Math.min(100, totalSatisfaction + strategic - penalty));
+
+        setScore({ total: Math.round(total), breakdown, alignment: Math.round(totalSatisfaction), strategic, penalty });
+      }, [selectedProjects, stakeholders, projects]);
+
+      const handleProjectToggle = (projectId) => {
+        setSelectedProjects(prev => 
+          prev.includes(projectId) 
+            ? prev.filter(id => id !== projectId)
+            : [...prev, projectId]
+        );
+      };
+
+      const handleSubmit = () => {
+        calculateScore();
+        setPhase('results');
+      };
+
+      if (phase === 'intro') {
+        return (
+          <div className="module-container">
+            <div className="intro-content">
+              <div className="module-badge">Module 2</div>
+              <h1>The Alignment Board</h1>
+              <p className="tagline">Balance competing interests to drive strategic success</p>
+              
+              <div className="scenario-box">
+                <h3>Scenario</h3>
+                <p>You're a newly appointed Chief Strategy Officer at TechVenture Inc., a mid-sized technology company. The executive team has conflicting priorities, and you have limited resources. Your task is to select the optimal portfolio of projects that maximizes overall stakeholder satisfaction while maintaining strategic coherence.</p>
+              </div>
+
+              <div className="instructions">
+                <h3>Instructions</h3>
+                <ul>
+                  <li>Review 5 stakeholders, each with different priorities and influence levels</li>
+                  <li>Evaluate 5 potential projects and their impacts on various priorities</li>
+                  <li>Select 2-3 projects that best align the team (selecting too many or too few will hurt your score)</li>
+                  <li>You have 5 minutes to make your decision</li>
+                </ul>
+              </div>
+
+              <div className="scoring-info">
+                <h4>Scoring</h4>
+                <p>Your performance is measured by:</p>
+                <ul>
+                  <li><strong>Stakeholder Alignment</strong> - Overall satisfaction weighted by influence</li>
+                  <li><strong>Strategic Coherence</strong> - Breadth of impact across priorities</li>
+                  <li><strong>Portfolio Balance</strong> - Optimal number of projects selected</li>
+                </ul>
+              </div>
+
+              <button className="start-btn" onClick={() => { setPhase('playing'); start(); }}>
+                Begin Assessment
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      if (phase === 'results') {
+        const radarData = stakeholders.map(sh => ({
+          subject: sh.name,
+          A: score.breakdown[sh.id] || 0,
+          fullMark: 100
+        }));
+
+        return (
+          <div className="module-container">
+            <div className="results-header">
+              <h2>Assessment Complete</h2>
+              <div className="total-score">
+                <span className="score-label">Overall Score</span>
+                <span className="score-value">{score.total}</span>
+                <span className="score-max">/ 100</span>
+              </div>
+            </div>
+
+            <div className="results-grid">
+              <div className="result-card">
+                <h3>Score Breakdown</h3>
+                <div className="score-components">
+                  <div className="component">
+                    <span>Stakeholder Alignment</span>
+                    <span className="value">{score.alignment}</span>
+                  </div>
+                  <div className="component">
+                    <span>Strategic Coherence</span>
+                    <span className="value">+{score.strategic}</span>
+                  </div>
+                  {score.penalty > 0 && (
+                    <div className="component penalty">
+                      <span>Portfolio Penalty</span>
+                      <span className="value">-{score.penalty}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="result-card">
+                <h3>Stakeholder Satisfaction</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <RadarChart data={radarData}>
+                    <PolarGrid stroke="rgba(212, 175, 55, 0.2)" />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#d4af37', fontSize: 12 }} />
+                    <Radar name="Satisfaction" dataKey="A" stroke="#d4af37" fill="#d4af37" fillOpacity={0.3} />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="result-card full-width">
+                <h3>Selected Projects</h3>
+                <div className="selected-projects-list">
+                  {selectedProjects.length === 0 ? (
+                    <p style={{color: 'rgba(232, 230, 227, 0.6)'}}>No projects selected</p>
+                  ) : (
+                    selectedProjects.map(projId => {
+                      const proj = projects.find(p => p.id === projId);
+                      return (
+                        <div key={projId} className="project-summary">
+                          <h4>{proj.name}</h4>
+                          <p>{proj.description}</p>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+
+              <div className="result-card full-width">
+                <h3>Performance Analysis</h3>
+                <div className="analysis-text">
+                  {score.total >= 80 && <p className="grade excellent">✓ Excellent - You've achieved strong alignment while maintaining strategic coherence. Your portfolio balances competing interests effectively.</p>}
+                  {score.total >= 60 && score.total < 80 && <p className="grade good">○ Good - Solid performance with room for optimization. Consider how selected projects interact to maximize stakeholder satisfaction.</p>}
+                  {score.total < 60 && <p className="grade needs-improvement">△ Needs Improvement - Your selection may leave key stakeholders unsatisfied or lack strategic focus. Review stakeholder priorities and project impacts.</p>}
+                </div>
+              </div>
+            </div>
+
+            <button className="action-btn" onClick={() => onComplete?.(score)}>
+              Continue to Module 3
+            </button>
+          </div>
+        );
+      }
+
+      // Playing phase
+      return (
+        <div className="module-container">
+          <div className="game-header">
+            <div className="header-left">
+              <h2>The Alignment Board</h2>
+              <span className="phase-indicator">Select 2-3 Projects</span>
+            </div>
+            <div className="header-right">
+              <div className="timer">
+                <span className="timer-icon">⏱</span>
+                <span className="timer-value">{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</span>
+              </div>
+              <div className="project-counter">
+                Selected: {selectedProjects.length}
+              </div>
+            </div>
+          </div>
+
+          <div className="board-layout">
+            <div className="stakeholders-panel">
+              <h3>Executive Team</h3>
+              <div className="stakeholders-list">
+                {stakeholders.map(sh => (
+                  <div key={sh.id} className="stakeholder-card">
+                    <div className="stakeholder-header">
+                      <div>
+                        <div className="stakeholder-name">{sh.name}</div>
+                        <div className="stakeholder-role">{sh.role}</div>
+                      </div>
+                      <div className="influence-badge">
+                        Influence: {sh.influence}/10
+                      </div>
+                    </div>
+                    <div className="priorities">
+                      <strong>Priorities:</strong>
+                      <div className="priority-tags">
+                        {sh.priorities.map((p, i) => (
+                          <span key={i} className="priority-tag">{p}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="projects-panel">
+              <h3>Available Projects</h3>
+              <div className="projects-list">
+                {projects.map(proj => (
+                  <div 
+                    key={proj.id} 
+                    className={`project-card ${selectedProjects.includes(proj.id) ? 'selected' : ''}`}
+                    onClick={() => handleProjectToggle(proj.id)}
+                  >
+                    <div className="project-header">
+                      <div>
+                        <h4>{proj.name}</h4>
+                        <p className="project-desc">{proj.description}</p>
+                      </div>
+                      <div className="selection-indicator">
+                        {selectedProjects.includes(proj.id) ? '✓' : ''}
+                      </div>
+                    </div>
+                    <div className="impacts">
+                      <strong>Impacts:</strong>
+                      <div className="impact-grid">
+                        {Object.entries(proj.impacts).map(([key, value]) => (
+                          <div key={key} className={`impact-item ${value < 0 ? 'negative' : 'positive'}`}>
+                            <span className="impact-label">{key}</span>
+                            <span className="impact-value">{value > 0 ? '+' : ''}{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="action-bar">
+                <button 
+                  className="submit-btn" 
+                  onClick={handleSubmit}
+                  disabled={selectedProjects.length === 0}
+                >
+                  Submit Portfolio
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Module 3: The Briefing Room
+    const BriefingRoom = ({ onComplete }) => {
+      const [phase, setPhase] = useState('intro');
+      const [currentQuestion, setCurrentQuestion] = useState(0);
+      const [answers, setAnswers] = useState([]);
+      const [score, setScore] = useState(null);
+      const [briefingRead, setBriefingRead] = useState(false);
+
+      const briefingData = {
+        title: "Market Entry Strategy for DigiHealth",
+        sections: [
+          {
+            title: "Company Overview",
+            content: "DigiHealth is a B2B SaaS company providing healthcare data analytics. Current annual revenue: $45M. Team size: 180 employees. Primary market: US hospitals (250 clients). Considering expansion into European market."
+          },
+          {
+            title: "Market Analysis",
+            content: "European healthcare IT market: €12B annually, growing 8% YoY. Key competitors: 3 established players with 60% combined market share. Regulatory environment: GDPR compliance required, additional healthcare data regulations vary by country. Entry cost estimate: €8M-12M over 2 years."
+          },
+          {
+            title: "Financial Data",
+            content: "Current profit margin: 22%. Customer acquisition cost (CAC): $85K. Lifetime value (LTV): $340K. Existing customers report 94% satisfaction, 18-month average contract length. Cash reserves: $28M. Annual burn rate: $8M."
+          },
+          {
+            title: "Strategic Options",
+            content: "Option A: Direct entry - Build local sales team in Germany and France. Option B: Partnership - Joint venture with MediTech Europe (established player, 15% market share). Option C: Acquisition - Purchase HealthAnalytics UK (£18M valuation, 45 clients, break-even)."
+          }
+        ]
+      };
+
+      const questions = [
+        {
+          id: 1,
+          question: "Based on the financial data, how many years can DigiHealth sustain operations without additional revenue?",
+          options: [
+            "1.5 years",
+            "2.5 years", 
+            "3.5 years",
+            "4.5 years"
+          ],
+          correct: 2,
+          explanation: "Cash reserves ($28M) ÷ Annual burn rate ($8M) = 3.5 years",
+          timeLimit: 60
+        },
+        {
+          id: 2,
+          question: "What is DigiHealth's current LTV:CAC ratio, and what does it indicate?",
+          options: [
+            "2:1 - Concerning, suggests inefficient customer acquisition",
+            "4:1 - Healthy, indicates sustainable unit economics",
+            "6:1 - Excellent, showing strong market fit and efficiency",
+            "8:1 - Exceptional, though may indicate under-investment in growth"
+          ],
+          correct: 1,
+          explanation: "LTV ($340K) ÷ CAC ($85K) = 4:1, which is considered healthy for SaaS businesses",
+          timeLimit: 75
+        },
+        {
+          id: 3,
+          question: "Considering the strategic options, which presents the LOWEST financial risk for market entry?",
+          options: [
+            "Option A (Direct entry) - predictable costs but highest total investment",
+            "Option B (Partnership) - shared risk and lower upfront cost",
+            "Option C (Acquisition) - immediate market presence but integration challenges",
+            "All options present equal risk given market conditions"
+          ],
+          correct: 1,
+          explanation: "Partnership shares both risk and cost, requires lower upfront capital than acquisition, and is less costly than building from scratch",
+          timeLimit: 90
+        },
+        {
+          id: 4,
+          question: "If DigiHealth enters Europe with a €10M investment and achieves 2% market share in year 2, what would be the estimated annual revenue?",
+          options: [
+            "€120M",
+            "€240M",
+            "€24M",
+            "€2.4M"
+          ],
+          correct: 1,
+          explanation: "European market size (€12B) × 2% market share = €240M annual revenue",
+          timeLimit: 60
+        },
+        {
+          id: 5,
+          question: "Which factor poses the GREATEST strategic risk to DigiHealth's European expansion?",
+          options: [
+            "Regulatory compliance costs and complexity",
+            "Established competitors with majority market share",
+            "Cultural differences in sales approach",
+            "Currency exchange rate fluctuations"
+          ],
+          correct: 1,
+          explanation: "With 60% combined market share, established competitors control the market and have strong customer relationships, brand recognition, and likely network effects",
+          timeLimit: 75
+        }
+      ];
+
+      const [questionTimer, setQuestionTimer] = useState(null);
+      const [questionStartTime, setQuestionStartTime] = useState(null);
+
+      useEffect(() => {
+        if (phase === 'question' && questionStartTime) {
+          const interval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - questionStartTime) / 1000);
+            const remaining = questions[currentQuestion].timeLimit - elapsed;
+            setQuestionTimer(remaining);
+            if (remaining <= 0) {
+              handleAnswer(null, true);
+            }
+          }, 100);
+          return () => clearInterval(interval);
+        }
+      }, [phase, questionStartTime, currentQuestion]);
+
+      const handleStartQuestions = () => {
+        setPhase('question');
+        setQuestionStartTime(Date.now());
+        setQuestionTimer(questions[0].timeLimit);
+      };
+
+      const handleAnswer = (selectedIndex, isTimeout = false) => {
+        const q = questions[currentQuestion];
+        const timeTaken = isTimeout ? q.timeLimit : Math.floor((Date.now() - questionStartTime) / 1000);
+        const isCorrect = !isTimeout && selectedIndex === q.correct;
+        
+        const speedBonus = isCorrect ? Math.max(0, 20 - timeTaken / 2) : 0;
+        const basePoints = isCorrect ? 100 : 0;
+        const points = Math.round(basePoints + speedBonus);
+
+        const newAnswers = [...answers, { 
+          questionId: q.id, 
+          selected: selectedIndex, 
+          correct: q.correct,
+          isCorrect,
+          timeTaken,
+          points
+        }];
+        
+        setAnswers(newAnswers);
+
+        if (currentQuestion < questions.length - 1) {
+          setCurrentQuestion(prev => prev + 1);
+          setQuestionStartTime(Date.now());
+          setQuestionTimer(questions[currentQuestion + 1].timeLimit);
+        } else {
+          calculateFinalScore(newAnswers);
+        }
+      };
+
+      const calculateFinalScore = (finalAnswers) => {
+        const totalPoints = finalAnswers.reduce((sum, a) => sum + (a.points || 0), 0);
+        const maxPoints = questions.length * 120;
+        const percentage = Math.round((totalPoints / maxPoints) * 100);
+        
+        setScore({
+          total: percentage,
+          correct: finalAnswers.filter(a => a.isCorrect).length,
+          totalQuestions: questions.length,
+          averageTime: Math.round(finalAnswers.reduce((sum, a) => sum + a.timeTaken, 0) / finalAnswers.length),
+          breakdown: finalAnswers
+        });
+        setPhase('results');
+      };
+
+      if (phase === 'intro') {
+        return (
+          <div className="module-container">
+            <div className="intro-content">
+              <div className="module-badge">Module 3</div>
+              <h1>The Briefing Room</h1>
+              <p className="tagline">Synthesize information and make strategic decisions under pressure</p>
+              
+              <div className="scenario-box">
+                <h3>Scenario</h3>
+                <p>You're a senior consultant preparing for a client meeting. You've received a briefing document about a potential market expansion opportunity. You need to quickly analyze the information and answer strategic questions that will guide your recommendations.</p>
+              </div>
+
+              <div className="instructions">
+                <h3>Instructions</h3>
+                <ul>
+                  <li>Read the briefing document carefully - you'll need specific details</li>
+                  <li>Answer 5 strategic questions based on the briefing</li>
+                  <li>Each question has a time limit (60-90 seconds)</li>
+                  <li>Correct answers earn points; fast correct answers earn bonus points</li>
+                  <li>You cannot return to the briefing once questions begin</li>
+                </ul>
+              </div>
+
+              <div className="scoring-info">
+                <h4>Scoring</h4>
+                <p>Your performance is measured by:</p>
+                <ul>
+                  <li><strong>Accuracy</strong> - Selecting the correct answer (100 points)</li>
+                  <li><strong>Speed</strong> - Faster correct answers earn up to +20 bonus points</li>
+                  <li><strong>Comprehension</strong> - Understanding key data and strategic implications</li>
+                </ul>
+              </div>
+
+              <button className="start-btn" onClick={() => setPhase('briefing')}>
+                Begin Assessment
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      if (phase === 'briefing') {
+        return (
+          <div className="module-container">
+            <div className="briefing-header">
+              <h2>{briefingData.title}</h2>
+              <button 
+                className="ready-btn" 
+                onClick={handleStartQuestions}
+                disabled={!briefingRead}
+              >
+                {briefingRead ? 'I\'m Ready - Start Questions' : 'Read the briefing first'}
+              </button>
+            </div>
+
+            <div className="briefing-content">
+              {briefingData.sections.map((section, idx) => (
+                <div key={idx} className="briefing-section">
+                  <h3>{section.title}</h3>
+                  <p>{section.content}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="briefing-footer">
+              <label className="read-checkbox">
+                <input 
+                  type="checkbox" 
+                  checked={briefingRead}
+                  onChange={(e) => setBriefingRead(e.target.checked)}
+                />
+                <span>I have read and understood the briefing document</span>
+              </label>
+            </div>
+          </div>
+        );
+      }
+
+      if (phase === 'question') {
+        const q = questions[currentQuestion];
+        const progress = ((currentQuestion) / questions.length) * 100;
+
+        return (
+          <div className="module-container">
+            <div className="question-header">
+              <div className="progress-info">
+                <span>Question {currentQuestion + 1} of {questions.length}</span>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+                </div>
+              </div>
+              <div className="question-timer">
+                <span className="timer-label">Time Remaining:</span>
+                <span className={`timer-value ${questionTimer <= 10 ? 'urgent' : ''}`}>
+                  {questionTimer}s
+                </span>
+              </div>
+            </div>
+
+            <div className="question-content">
+              <h2>{q.question}</h2>
+              
+              <div className="options-grid">
+                {q.options.map((option, idx) => (
+                  <button
+                    key={idx}
+                    className="option-btn"
+                    onClick={() => handleAnswer(idx)}
+                  >
+                    <span className="option-letter">{String.fromCharCode(65 + idx)}</span>
+                    <span className="option-text">{option}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      if (phase === 'results') {
+        return (
+          <div className="module-container">
+            <div className="results-header">
+              <h2>Assessment Complete</h2>
+              <div className="total-score">
+                <span className="score-label">Overall Score</span>
+                <span className="score-value">{score.total}</span>
+                <span className="score-max">/ 100</span>
+              </div>
+            </div>
+
+            <div className="results-grid">
+              <div className="result-card">
+                <h3>Performance Summary</h3>
+                <div className="score-components">
+                  <div className="component">
+                    <span>Questions Correct</span>
+                    <span className="value">{score.correct} / {score.totalQuestions}</span>
+                  </div>
+                  <div className="component">
+                    <span>Accuracy Rate</span>
+                    <span className="value">{Math.round((score.correct / score.totalQuestions) * 100)}%</span>
+                  </div>
+                  <div className="component">
+                    <span>Average Response Time</span>
+                    <span className="value">{score.averageTime}s</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="result-card full-width">
+                <h3>Question Breakdown</h3>
+                <div className="questions-review">
+                  {score.breakdown.map((answer, idx) => {
+                    const q = questions[idx];
+                    return (
+                      <div key={idx} className={`review-item ${answer.isCorrect ? 'correct' : 'incorrect'}`}>
+                        <div className="review-header">
+                          <span className="q-number">Q{idx + 1}</span>
+                          <span className={`result-badge ${answer.isCorrect ? 'correct' : 'incorrect'}`}>
+                            {answer.isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                          </span>
+                          <span className="time-taken">{answer.timeTaken}s</span>
+                          <span className="points-earned">{answer.points} pts</span>
+                        </div>
+                        <div className="review-question">{q.question}</div>
+                        <div className="review-answer">
+                          <strong>Your answer:</strong> {answer.selected !== null ? q.options[answer.selected] : 'No answer (timeout)'}
+                        </div>
+                        {!answer.isCorrect && (
+                          <div className="review-correct">
+                            <strong>Correct answer:</strong> {q.options[q.correct]}
+                          </div>
+                        )}
+                        <div className="review-explanation">
+                          <strong>Explanation:</strong> {q.explanation}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="result-card full-width">
+                <h3>Performance Analysis</h3>
+                <div className="analysis-text">
+                  {score.total >= 80 && <p className="grade excellent">✓ Excellent - You demonstrated strong analytical skills and decision-making under pressure. Your ability to quickly synthesize complex information is impressive.</p>}
+                  {score.total >= 60 && score.total < 80 && <p className="grade good">○ Good - Solid performance with good comprehension. Focus on improving speed without sacrificing accuracy for higher scores.</p>}
+                  {score.total < 60 && <p className="grade needs-improvement">△ Needs Improvement - Review the briefing details more carefully. Strategic consulting requires precise analysis of data and clear understanding of business implications.</p>}
+                </div>
+              </div>
+            </div>
+
+            <button className="action-btn" onClick={() => onComplete?.(score)}>
+              View Complete Results
+            </button>
+          </div>
+        );
+      }
+
+      return null;
+    };
+
+    // Main App
+    const SolveAssessment = () => {
+      const [currentModule, setCurrentModule] = useState('home');
+      const [results, setResults] = useState({ module2: null, module3: null });
+
+      const handleModule2Complete = (score) => {
+        setResults(prev => ({ ...prev, module2: score }));
+        setCurrentModule('module3');
+      };
+
+      const handleModule3Complete = (score) => {
+        setResults(prev => ({ ...prev, module3: score }));
+        setCurrentModule('complete');
+      };
+
+      if (currentModule === 'home') {
+        return (
+          <div className="app-container">
+            <div className="home-screen">
+              <div className="brand-header">
+                <h1 className="brand-title">Strategic Assessment Suite</h1>
+                <p className="brand-subtitle">Evaluate decision-making and analytical capabilities</p>
+              </div>
+
+              <div className="modules-grid">
+                <div className="module-preview" onClick={() => setCurrentModule('module2')}>
+                  <div className="module-number">02</div>
+                  <h2>The Alignment Board</h2>
+                  <p>Balance competing stakeholder interests to create an optimal project portfolio</p>
+                  <div className="module-meta">
+                    <span>⏱ 5 minutes</span>
+                    <span>🎯 Stakeholder Management</span>
+                  </div>
+                </div>
+
+                <div className="module-preview" onClick={() => setCurrentModule('module3')}>
+                  <div className="module-number">03</div>
+                  <h2>The Briefing Room</h2>
+                  <p>Analyze complex information and make strategic decisions under time pressure</p>
+                  <div className="module-meta">
+                    <span>⏱ 8 minutes</span>
+                    <span>📊 Data Analysis</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      if (currentModule === 'module2') {
+        return (
+          <div className="app-container">
+            <AlignmentBoard onComplete={handleModule2Complete} />
+          </div>
+        );
+      }
+
+      if (currentModule === 'module3') {
+        return (
+          <div className="app-container">
+            <BriefingRoom onComplete={handleModule3Complete} />
+          </div>
+        );
+      }
+
+      if (currentModule === 'complete') {
+        return (
+          <div className="app-container">
+            <div className="completion-screen">
+              <h1>Assessment Complete</h1>
+              <div className="final-results">
+                <div className="module-result">
+                  <h3>Module 2: The Alignment Board</h3>
+                  <div className="score">{results.module2?.total || 0}/100</div>
+                </div>
+                <div className="module-result">
+                  <h3>Module 3: The Briefing Room</h3>
+                  <div className="score">{results.module3?.total || 0}/100</div>
+                </div>
+              </div>
+              <button onClick={() => setCurrentModule('home')}>Return to Home</button>
+            </div>
+          </div>
+        );
+      }
+
+      return null;
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<SolveAssessment />);
+  </script>
+</body>
+</html>
