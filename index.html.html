@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Budget Room · Module 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg: #030712;
+  --s1: rgba(17, 24, 39, 0.8);
+  --s2: rgba(31, 41, 55, 0.6);
+  --s3: rgba(55, 65, 81, 0.4);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hi: rgba(59, 130, 246, 0.4);
+  --text: #f9fafb;
+  --text2: #d1d5db;
+  --text3: #9ca3af;
+  --gold: #f59e0b;
+  --gold-glow: rgba(245, 158, 11, 0.2);
+  --green: #10b981;
+  --green-glow: rgba(16, 185, 129, 0.2);
+  --red: #ef4444;
+  --red-glow: rgba(239, 68, 68, 0.2);
+  --blue: #3b82f6;
+  --blue-glow: rgba(59, 130, 246, 0.2);
+  --glass: blur(16px);
+}
+
+
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;overflow:hidden;background-image: radial-gradient(circle at 50% -20%, #1E293B 0%, #030406 80%);}
+h1, h2, h3, #logo, .panel-title, #end-title, #intro-title { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+
+
+
+/* INTRO SCREEN */
+#intro-screen {
+  position: fixed; inset: 0; background: var(--bg); z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.5s ease;
+}
+#intro-screen.hide { opacity: 0; pointer-events: none; }
+#intro-box {
+  max-width: 600px; width: 90%; background: var(--bg); 
+  border: 1px solid var(--border-hi);
+  border-radius: 2px; padding: 40px; text-align: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5), 0 0 20px var(--blue-glow);
+}
+#intro-title { font-size: 32px; color: var(--text); margin-bottom: 12px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 300; }
+#intro-subtitle { font-size: 14px; color: var(--text2); margin-bottom: 30px; line-height: 1.6; font-weight:300;}
+.instruction-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; margin-bottom: 36px; }
+.inst-card { background: var(--s1); padding: 16px; border: 1px solid var(--border); }
+.inst-card h4 { font-size: 11px; color: var(--gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+.inst-card p { font-size: 11px; color: var(--text2); line-height: 1.6; }
+#start-btn { 
+  background: var(--blue); 
+  color: var(--bg); border: none; padding: 14px 40px; 
+  font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+#start-btn:hover { background: var(--text); transform: none; box-shadow: 0 0 20px var(--blue-glow); }
+
+/* LAYOUT */
+#main{display:grid;grid-template-columns:1fr 340px;height:calc(100vh - 54px);overflow:hidden}
+
+/* LEFT PANEL */
+#left{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border); background: rgba(0,0,0,0.2);}
+#toolbar{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--s1);flex-shrink:0}
+#toolbar-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.1em;}
+.sbtn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--s2);color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s}
+.sbtn:hover{background:var(--s3);color:var(--text); border-color: var(--blue);}
+.sbtn.active-sort{background:var(--blue-glow);color:var(--blue);border-color:var(--blue)}
+
+#topbar{display:flex;align-items:center;gap:14px;padding:0 20px;height:54px;border-bottom:1px solid var(--border);background:var(--s1);backdrop-filter: var(--glass);position:relative;z-index:10;flex-shrink:0}
+#logo{font-size:18px;font-weight:600;color:var(--text);letter-spacing:-.02em;white-space:nowrap}
+#logo span{color:var(--blue);font-family:'DM Sans',sans-serif;font-weight:500;text-transform: uppercase; font-size:10px;margin-left:8px; letter-spacing: 0.1em;}
+.sep{width:1px;height:24px;background:var(--border);flex-shrink:0}
+#phase-pill{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px;border-radius:20px;background:var(--blue-glow);color:var(--blue);white-space:nowrap; border: 1px solid rgba(59, 130, 246, 0.3);}
+#topbar-budget{display:flex;flex-direction:column;gap:6px;flex:1;max-width:260px}
+#topbar-budget-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text2); font-weight:500;}
+#topbar-bar-track{height:6px;background:var(--s3);border-radius:10px;overflow:hidden; border: 1px solid var(--border);}
+#topbar-bar-fill{height:100%;border-radius:10px;background:var(--green);box-shadow: 0 0 10px var(--green-glow);transition:width .4s cubic-bezier(0.4, 0, 0.2, 1),background .3s}
+#timer{font-family:'Fira Code',monospace;font-size:24px;font-weight:600;letter-spacing:.04em;margin-left:auto;white-space:nowrap; color: var(--blue);}
+#timer.warn{color:var(--gold); text-shadow: 0 0 10px var(--gold-glow);}
+#timer.danger{color:var(--red); text-shadow: 0 0 10px var(--red-glow); animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform: scale(1); opacity:1} 50%{transform: scale(1.05); opacity:0.8}}
+
+.tbtn{padding:8px 16px;border-radius:8px;border:1px solid var(--border-hi);background:var(--s2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight: 500; cursor:pointer;transition:all .2s;white-space:nowrap}
+.tbtn:hover{background:var(--s3); border-color: var(--blue); transform: translateY(-1px);}
+.tbtn.active{background:var(--blue-glow);color:var(--blue);border-color:var(--blue)}
+.tbtn.danger-btn{background: var(--red-glow); color: var(--red); border-color: rgba(239, 68, 68, 0.3);}
+
+/* CARDS */
+#grid { padding: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.card{background:var(--s1); backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius:14px;padding:16px;cursor:pointer;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);position:relative;user-select:none; overflow: hidden; display: flex; flex-direction: column; min-height: 180px;}
+.card:hover:not(.blocked):not(.mandatory){border-color:var(--blue); background:var(--s2); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 15px var(--blue-glow);}
+.card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05)); pointer-events: none; }
+.card.selected{border-color:var(--green); background:rgba(16, 185, 129, 0.05); box-shadow: 0 0 20px var(--green-glow);}
+.card.selected::before { content: 'STRATEGIC ADVANTAGE'; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--green); box-shadow: 0 0 10px var(--green); }
+.card.blocked{border-color:rgba(239,68,68,.3);background:rgba(239, 68, 68, 0.05);cursor:not-allowed;opacity:.6}
+.card.mandatory{border-color:var(--gold);background:rgba(255, 179, 25, 0.05);cursor:default;}
+
+.card-name{font-family: 'Fraunces', serif; font-size:15px;font-weight:600;color:var(--text);line-height:1.2;}
+.badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border: 1px solid transparent;}
+.b-blocked{background:var(--red-glow); color:var(--red); border-color: var(--red);}
+.b-mandatory{background:var(--gold-glow); color:var(--gold); border-color: var(--gold);}
+.b-selected{background:var(--green-glow); color:var(--green); border-color: var(--green);}
+.b-growth{background:var(--blue-glow); color:var(--blue); border-color: var(--blue);}
+
+.card-desc{font-size:12px;color:var(--text2);margin-bottom:12px; min-height: 36px;}
+.roi-track{height:5px;background:var(--s3);border-radius:10px; margin-top: 4px;}
+.roi-fill{height:100%;border-radius:10px; box-shadow: 0 0 8px currentColor;}
+
+/* RIGHT PANEL */
+#right { background: var(--bg); border-left: 1px solid var(--border); }
+#right-header h3 { font-size: 18px; margin-bottom: 15px; color: var(--blue); }
+#big-track { height: 10px; border-radius: 20px; background: var(--s3); border: 1px solid var(--border); }
+#big-fill { border-radius: 20px; box-shadow: 0 0 15px currentColor; }
+
+#submit { 
+  background: linear-gradient(135deg, var(--green), #059669); color: white;
+  padding: 18px; border-radius: 12px; font-size: 14px; letter-spacing: 0.1em;
+  font-weight: 800; text-transform: uppercase;
+  box-shadow: 0 4px 15px var(--green-glow); border: none; cursor: pointer; transition: all 0.3s;
+}
+#submit:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 30px var(--green-glow); filter: brightness(1.2); }
+#submit:active:not(:disabled) { transform: scale(0.98); }
+#submit.over { background: linear-gradient(135deg, var(--red), #DC2626); box-shadow: 0 4px 15px var(--red-glow); cursor: not-allowed; }
+
+/* END SCREEN IMPROVEMENTS */
+#end-overlay { position: fixed; inset: 0; background: radial-gradient(circle at 50% 0%, #002b3d 0%, var(--bg) 100%); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 10px; overflow: hidden; }
+#end-overlay.show { display: flex; animation: fadeIn 0.4s ease-out; }
+#end-content { max-width: 600px; width: 95%; background: #002b3d; border: 1px solid var(--border-hi); border-radius: 1px; padding: 30px; box-shadow: 0 0 100px rgba(0,0,0,0.8); transform: scale(0.85); transform-origin: top center; max-height: 98vh; overflow-y: auto; text-align: left; }
+#end-title { font-size: 24px; color: var(--text); margin-bottom: 2px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 300; }
+.verdict-bar { font-size: 13px; font-weight: 500; padding: 20px; border-radius: 1px; margin: 20px 0; border: 1px solid currentColor; text-align: left; }
+.v-go { background: rgba(0, 178, 169, 0.05); color: var(--green); border-left: 4px solid var(--green); }
+.v-no { background: rgba(255, 82, 82, 0.05); color: var(--red); border-left: 4px solid var(--red); }
+.v-watch { background: rgba(212, 175, 55, 0.05); color: var(--gold); border-left: 4px solid var(--gold); }
+
+.sring-val { font-size: 20px; font-weight: 200; color: var(--text); }
+.bc { background: var(--s1); border: 1px solid var(--border); border-radius: 1px; padding: 12px; }
+.brow2-bar { height: 4px; border-radius: 1px; }
+.brow2-fill { box-shadow: 0 0 10px currentColor; }
+
+/* CARD COMPONENTS */
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px}
+.card-badges{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+
+.card-metrics{display:flex;gap:10px;align-items:center; margin-top: auto;}
+.m-item{display:flex;flex-direction:column;gap:2px}
+.m-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em; font-weight: 700;}
+.m-val{font-family:'Fira Code',monospace;font-size:12px;font-weight:600;color:var(--text)}
+
+.roi-wrap{flex:1;display:flex;flex-direction:column;gap:4px}
+.roi-header{display:flex;justify-content:space-between; align-items: flex-end;}
+
+.risk-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
+.rL{background:var(--green); box-shadow: 0 0 6px var(--green-glow);}
+.rM{background:var(--gold); box-shadow: 0 0 6px var(--gold-glow);}
+.rH{background:var(--red); box-shadow: 0 0 6px var(--red-glow);}
+.rC{background:#FF66CC; box-shadow: 0 0 6px rgba(255,102,204,0.4);}
+
+.dep-note{font-size:10px;color:var(--gold);margin-top:8px;line-height:1.4; opacity: 0.8;}
+.dep-warn{font-size:10px;color:var(--red);margin-top:4px; font-weight: 600;}
+
+.checkmark{position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;opacity:0;transition:all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: scale(0.5); z-index: 2;}
+.card.selected .checkmark{opacity:1; transform: scale(1);}
+.checkmark svg{width:10px;height:10px;stroke:#fff;stroke-width:3;fill:none}
+
+/* SIDEBAR & OVERLAYS */
+.brow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.brow-lbl{font-size:12px;color:var(--text2)}
+.brow-val{font-family:'Fira Code',monospace;font-size:13px;color:var(--text); font-weight: 500;}
+.brow-val.over{color:var(--red)}.brow-val.ok{color:var(--green)}
+
+#port-list{flex:1;overflow-y:auto;padding:12px}
+.empty-msg{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;line-height:1.6}
+.p-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;margin-bottom:6px;background:var(--s2);border: 1px solid var(--border); animation:slideInRight 0.3s ease-out}
+@keyframes slideInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.p-item.mand{background:var(--gold-glow); border-color: var(--gold);}
+.p-name{font-size:12px;color:var(--text);flex:1;padding-right:10px;line-height:1.4; font-weight: 500;}
+.p-name.mand-name{color:var(--gold)}
+.p-cost{font-family:'Fira Code',monospace;font-size:11px;color:var(--text2);white-space:nowrap}
+
+#right-footer{padding:20px;border-top:1px solid var(--border);background: var(--s1); backdrop-filter: var(--glass);}
+#roi-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-radius:10px;background:var(--s3);margin-bottom:12px; border: 1px solid var(--border-hi); position: relative; overflow: hidden;}
+#roi-row::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: var(--p-width, 0%); background: rgba(59, 130, 246, 0.1); transition: width 0.4s; }
+.roi-lbl { position: relative; z-index: 1; }
+.roi-big{font-family:'Fira Code',monospace;font-size:16px;color:var(--blue);font-weight:700; text-shadow: 0 0 10px var(--blue-glow); position: relative; z-index: 1;}
+
+/* FLOATING PANELS */
+.float-panel{position:fixed;bottom:80px;right:20px;background:var(--s1);backdrop-filter:var(--glass);border:1px solid var(--border-hi);border-radius:16px;padding:20px;z-index:100;display:none;box-shadow: 0 20px 50px rgba(0,0,0,0.5);width:300px;}
+.float-panel.open{display:block;animation:popIn .3s cubic-bezier(0.175, 0.885, 0.32, 1.275)}
+@keyframes popIn{from{opacity:0;transform:translateY(20px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+#calc-panel{right:20px;}
+#notes-panel{right:340px;}
+.panel-title{font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.12em;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center;}
+.panel-title::after{content:'ESC TO CLOSE';font-size:8px;opacity:0.5;}
+#calc-display{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:'Fira Code',monospace;font-size:22px;color:var(--text);text-align:right;min-height:58px;margin-bottom:12px;word-break:break-all;box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cbtn{padding:14px 5px;border-radius:10px;border:1px solid var(--border);background:var(--s2);color:var(--text);font-family:'Fira Code',monospace;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.cbtn:hover{background:var(--s3); border-color: var(--blue); transform: scale(1.05);}
+.cbtn.op{color:var(--gold); background: rgba(245, 158, 11, 0.1);}
+.cbtn.eq{background:var(--blue);color:#fff;border-color:var(--blue); box-shadow: 0 4px 12px var(--blue-glow);}
+.cbtn.clr{color:var(--red); background: rgba(239, 68, 68, 0.1);}
+#notes-ta{width:100%;height:220px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;line-height:1.6;resize:none;outline:none; transition: all 0.3s;}
+#notes-ta:focus{border-color:var(--blue); background: rgba(0,0,0,0.4); box-shadow: 0 0 15px var(--blue-glow);}
+
+/* CONSTRAINT MODAL */
+#c-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+#c-overlay.show{display:flex;animation:fadeIn .3s ease-out}
+#c-box{background:var(--s1); backdrop-filter: var(--glass); border: 2px solid var(--border-hi); border-radius:24px;padding:40px;max-width:500px;width:100%;animation:popIn .4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 20px 50px rgba(0,0,0,0.6);}
+#c-type{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--red);margin-bottom:10px}
+#c-title{font-size:28px;font-weight:800;color:var(--text);margin-bottom:15px; line-height: 1.1;}
+#c-body{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:20px}
+#c-impact{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:24px;font-size:13px;color:var(--text2);line-height:1.6}
+#c-impact strong{color:var(--red); font-weight: 700;}
+#c-dismiss{width:100%;padding:14px;background:var(--blue);border:none;border-radius:12px;color:white;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+#c-dismiss:hover{transform: translateY(-2px); box-shadow: 0 5px 15px var(--blue-glow);}
+#c-bar{height:4px;background:var(--red);margin-top:20px;border-radius:10px;transition:width 30s linear;width:100%; box-shadow: 0 0 10px var(--red-glow);}
+
+/* SCORECARD & RINGS */
+#score-row{display:flex;justify-content:space-between;gap:10px;margin:25px 0}
+.sring-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;flex:1}
+.sring{position:relative;width:80px;height:80px;display:flex;align-items:center;justify-content:center}
+.sring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.sring-val { font-size: 22px; font-weight: 200; color: var(--blue); position: relative; z-index: 2; }
+.sring-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);text-align:center}
+
+.brow2{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.brow2-lbl{font-size:11px;color:var(--text2);flex:1}
+.brow2-pts{font-family:'Fira Code',monospace;font-size:11px;min-width:60px;text-align:right; font-weight: 600;}
+.pts-earn{color:var(--green)}.pts-miss{color:var(--text3)}
+
+.obs-card { background: var(--s1); backdrop-filter: var(--glass); border: 1px solid var(--border-hi); border-radius: 16px; padding: 24px; }
+.obs-item { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; }
+.obs-item:last-child { border-bottom: none; }
+.obs-icon { font-size: 14px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid currentColor; margin-right: 12px; flex-shrink: 0; }
+.pos{color:var(--green); background: var(--green-glow);}
+.neg{color:var(--red); background: var(--red-glow);}
+.neu{color:var(--gold); background: var(--gold-glow);}
+
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+</style>
+</head>
+<body>
+
+<!-- INTRO SCREEN -->
+<div id="intro-screen">
+  <div id="intro-box">
+    <h1 id="intro-title">Strategic Commander</h1>
+    <p id="intro-subtitle">Welcome, Director. Your mission is to allocate $2M in capital across competing initiatives to maximize ROI while navigating real-world constraints.</p>
+    
+    <div class="instruction-grid">
+      <div class="inst-card">
+        <h4>1. Select Initiatives</h4>
+        <p>Choose the best projects from the grid. Watch out for dependencies and risk levels.</p>
+      </div>
+      <div class="inst-card">
+        <h4>2. Manage Budget</h4>
+        <p>Stay within your ceiling. Exceeding the budget will prevent mission submission.</p>
+      </div>
+      <div class="inst-card">
+        <h4>3. Adapt to Events</h4>
+        <p>The market changes. Be ready to pivot when unexpected constraints arise.</p>
+      </div>
+      <div class="inst-card">
+        <h4>4. Mission Debrief</h4>
+        <p>Submit your allocation to receive a detailed performance scorecard and rank.</p>
+      </div>
+    </div>
+    
+    <button id="start-btn" onclick="startMission()">Commence Mission</button>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div id="logo">Strategic Commander <span>Module 01 // Resource Allocation</span></div>
+
+  <div class="sep"></div>
+  <div id="phase-pill">Planning Phase</div>
+  <div class="sep"></div>
+  <div id="topbar-budget">
+    <div id="topbar-budget-row">
+      <span>Budget utilisation</span>
+      <span id="tb-budget-txt">$0 / $2,000,000</span>
+    </div>
+    <div id="topbar-bar-track"><div id="topbar-bar-fill"></div></div>
+  </div>
+  <div id="timer">20:00</div>
+  <div class="sep"></div>
+  <div style="display:flex; gap:8px;">
+    <button class="tbtn" id="calc-btn" onclick="toggleCalc()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px; vertical-align: middle;"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
+      Calculator
+    </button>
+    <button class="tbtn" id="notes-btn" onclick="toggleNotes()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px; vertical-align: middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Notes
+    </button>
+  </div>
+  <div class="sep"></div>
+  <button class="tbtn danger-btn" onclick="endGame(true)">End Mission ↗</button>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <!-- LEFT -->
+  <div id="left">
+    <div id="toolbar">
+      <span id="toolbar-label">Sort by:</span>
+      <button class="sbtn" id="s-roi" onclick="sortBy('roi')">Highest ROI</button>
+      <button class="sbtn" id="s-cost" onclick="sortBy('cost')">Lowest cost</button>
+      <button class="sbtn" id="s-risk" onclick="sortBy('risk')">Risk level</button>
+    </div>
+    <div id="grid"></div>
+  </div>
+
+  <!-- RIGHT -->
+  <div id="right">
+    <div id="right-header">
+      <h3>Your allocation</h3>
+      <div class="brow"><span class="brow-lbl">Total budget</span><span class="brow-val" id="bv-total">$2,000,000</span></div>
+      <div class="brow"><span class="brow-lbl">Committed</span><span class="brow-val" id="bv-committed">$0</span></div>
+      <div class="brow"><span class="brow-lbl">Remaining</span><span class="brow-val ok" id="bv-remaining">$2,000,000</span></div>
+      <div id="big-track"><div id="big-fill" style="width:0%"></div></div>
+    </div>
+    <div id="port-list"></div>
+    <div id="right-footer">
+      <div id="roi-row"><span class="roi-lbl">Projected ROI value</span><span class="roi-big" id="roi-val">$0</span></div>
+      <button id="submit" onclick="submitGame()">Submit allocation</button>
+    </div>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<div class="float-panel" id="calc-panel">
+  <div class="panel-title">ROI Calculator</div>
+  <div id="calc-display">0</div>
+  <div class="calc-grid">
+    <button class="cbtn clr" onclick="cb('C')">C</button>
+    <button class="cbtn op" onclick="cb('(')">(</button>
+    <button class="cbtn op" onclick="cb(')')">)</button>
+    <button class="cbtn op" onclick="cb('/')">÷</button>
+    <button class="cbtn" onclick="cb('7')">7</button>
+    <button class="cbtn" onclick="cb('8')">8</button>
+    <button class="cbtn" onclick="cb('9')">9</button>
+    <button class="cbtn op" onclick="cb('*')">×</button>
+    <button class="cbtn" onclick="cb('4')">4</button>
+    <button class="cbtn" onclick="cb('5')">5</button>
+    <button class="cbtn" onclick="cb('6')">6</button>
+    <button class="cbtn op" onclick="cb('-')">−</button>
+    <button class="cbtn" onclick="cb('1')">1</button>
+    <button class="cbtn" onclick="cb('2')">2</button>
+    <button class="cbtn" onclick="cb('3')">3</button>
+    <button class="cbtn op" onclick="cb('+')">+</button>
+    <button class="cbtn" onclick="cb('0')" style="grid-column:span 2">0</button>
+    <button class="cbtn" onclick="cb('.')">.</button>
+    <button class="cbtn eq" onclick="cb('=')">=</button>
+  </div>
+</div>
+
+<!-- NOTES -->
+<div class="float-panel" id="notes-panel">
+  <div class="panel-title">Scratch Pad</div>
+  <textarea id="notes-ta" placeholder="Structure your thinking here — rank initiatives, track trade-offs, log your criteria..." oninput="st.telem.notesUsed=true"></textarea>
+</div>
+
+<!-- CONSTRAINT MODAL -->
+<div id="c-overlay">
+  <div id="c-box">
+    <div id="c-type"></div>
+    <div id="c-title"></div>
+    <div id="c-body"></div>
+    <div id="c-impact"></div>
+    <button id="c-dismiss" onclick="dismissC()">Acknowledged — update my allocation</button>
+    <div id="c-bar"></div>
+  </div>
+</div>
+
+<!-- END SCREEN -->
+<div id="end-overlay">
+  <div id="end-content">
+    <div id="end-hdr">
+      <div class="overline">Mission Complete</div>
+      <div id="end-title">Performance Debrief</div>
+      <div id="end-sub"></div>
+    </div>
+    <div id="verdict-bar"></div>
+    <div id="score-row"></div>
+    <div id="breakdown"></div>
+    <div id="observations"></div>
+    <div style="text-align:center;margin-top:30px">
+      <button onclick="location.reload()" style="padding:12px 30px;background:var(--s2);border:1px solid var(--border-hi);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;">Restart Mission</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────
+const F = n => '$' + Math.round(n).toLocaleString();
+
+const BASE_INITS = [
+  {id:1,name:'Customer Loyalty Program',cost:400000,roi:45,risk:'Low',cat:'Retention',desc:'Points-based loyalty system with personalised rewards and tier benefits.',deps:[],depNote:'',optimal:false},
+  {id:2,name:'Mobile App Redesign',cost:600000,roi:60,risk:'Medium',cat:'Growth',desc:'Full UX overhaul of consumer mobile app — increases session time and conversion.',deps:[7],depNote:'Requires API Platform Upgrade (#7)',optimal:false},
+  {id:3,name:'AI Recommendation Engine',cost:800000,roi:85,risk:'High',cat:'Growth',desc:'ML-powered cross-channel product recommendations. High ceiling, high execution risk.',deps:[],depNote:'',optimal:false},
+  {id:4,name:'Data Warehouse Migration',cost:500000,roi:35,risk:'Medium',cat:'Infrastructure',desc:'Migrate from legacy DW to cloud-native stack. Unlocks downstream high-ROI initiatives.',deps:[],depNote:'',optimal:true},
+  {id:5,name:'Email Campaign Automation',cost:200000,roi:55,risk:'Low',cat:'Growth',desc:'Automated lifecycle email sequences. Proven channel, low cost, fast to deploy.',deps:[],depNote:'',optimal:true},
+  {id:6,name:'Compliance Dashboard',cost:300000,roi:20,risk:'Low',cat:'Compliance',desc:'Regulatory reporting and audit trail system. Required ahead of Q3 regulatory review.',deps:[],depNote:'',optimal:false},
+  {id:7,name:'API Platform Upgrade',cost:350000,roi:40,risk:'Medium',cat:'Infrastructure',desc:'Modernise API gateway and developer tooling. Enables Mobile App Redesign.',deps:[],depNote:'',optimal:false},
+  {id:8,name:'New Market Expansion',cost:700000,roi:90,risk:'High',cat:'Growth',desc:'Enter APAC market with localised product suite. Highest potential ROI — requires data readiness.',deps:[4],depNote:'Requires Data Warehouse Migration (#4)',optimal:true},
+];
+
+const SECURITY = {id:9,name:'Security Audit & Remediation',cost:250000,roi:15,risk:'Critical',cat:'Compliance',desc:'Mandatory security programme following external pen-test. Board-mandated. Non-negotiable.',deps:[],depNote:'',optimal:true,mandatory:true};
+
+const CONSTRAINTS = [
+  {id:'c1',at:300,type:'Budget Reduction',title:'Budget cut confirmed',body:"Finance has finalised Q3 digital budgets. Discretionary spend has been reduced by $200,000 as part of a company-wide cost optimisation. Your updated budget ceiling is effective immediately.",impact:'<strong>Budget reduced: $2,000,000 → $1,800,000.</strong> Review your allocation and remove initiatives if you are over the new limit.',fn:s=>{s.budget=1800000}},
+  {id:'c2',at:600,type:'Initiative Blocked',title:'Legal hold on AI initiative',body:"The Legal team has placed a hold on the AI Recommendation Engine pending a data governance review. The initiative cannot receive funding in this planning cycle.",impact:'<strong>Initiative #3 (AI Recommendation Engine) is now blocked</strong> and must not be included in your final allocation.',fn:s=>{s.blocked.add(3);s.selected.delete(3)}},
+  {id:'c3',at:900,type:'New Mandatory Requirement',title:'Urgent: security audit required',body:"Following last week's penetration test findings, the CISO has mandated an immediate security audit and remediation programme. This is a board-level requirement with a hard deadline.",impact:'<strong>Security Audit & Remediation ($250,000) must be included</strong> in your final allocation. It has been added to your initiative list.',fn:s=>{s.inits.push({...SECURITY});s.mandatory.add(9);s.selected.add(9)}},
+];
+
+// ─── STATE ────────────────────────────────────────────────────
+const st = {
+  budget: 2000000,
+  inits: BASE_INITS.map(i=>({...i})),
+  selected: new Set(),
+  blocked: new Set(),
+  mandatory: new Set(),
+  cIdx: 0,
+  cActive: null,
+  cFiredAt: [],
+  elapsed: 0,
+  sortKey: null,
+  phase: 'playing',
+  telem: {
+    calcOpened: false,
+    notesUsed: false,
+    sortUsed: false,
+    timeToFirst: null,
+    cRespTime: [null,null,null],
+    reversals: 0,
+    lastToggle: null,
+    actionCount: 0,
+  }
+};
+
+// ─── TIMER ───────────────────────────────────────────────────
+const GAME_SECS = 1200;
+let ticker = null;
+
+function startMission() {
+  document.getElementById('intro-screen').classList.add('hide');
+  // Initialize timer and start ticker
+  renderTimer();
+  ticker = setInterval(()=>{
+
+    st.elapsed++;
+    renderTimer();
+    checkConstraints();
+    if(st.elapsed>=GAME_SECS){clearInterval(ticker);endGame(false);}
+  },1000);
+}
+
+
+function renderTimer(){
+  const rem = GAME_SECS - st.elapsed;
+  const m = String(Math.floor(rem/60)).padStart(2,'0');
+  const s = String(rem%60).padStart(2,'0');
+  const el = document.getElementById('timer');
+  el.textContent = m+':'+s;
+  el.className = rem<120?'danger':rem<300?'warn':'';
+}
+
+// ─── CONSTRAINTS ─────────────────────────────────────────────
+function checkConstraints(){
+  if(st.cIdx>=CONSTRAINTS.length) return;
+  const c = CONSTRAINTS[st.cIdx];
+  if(st.elapsed>=c.at){
+    st.cFiredAt[st.cIdx] = st.elapsed;
+    c.fn(st);
+    showConstraint(c, st.cIdx);
+    st.cIdx++;
+  }
+}
+
+function showConstraint(c, idx){
+  document.getElementById('c-type').textContent = '⚠ Constraint event — '+c.type;
+  document.getElementById('c-title').textContent = c.title;
+  document.getElementById('c-body').textContent = c.body;
+  document.getElementById('c-impact').innerHTML = c.impact;
+  const bar = document.getElementById('c-bar');
+  bar.style.transition='none'; bar.style.width='100%';
+  document.getElementById('c-overlay').classList.add('show');
+  st.cActive = idx;
+  renderAll();
+  requestAnimationFrame(()=>{ bar.style.transition='width 30s linear'; bar.style.width='0%'; });
+  setTimeout(()=>{ if(st.cActive===idx) dismissC(); }, 30000);
+}
+
+function dismissC(){
+  if(st.cActive!==null){
+    const idx = st.cActive;
+    if(st.telem.cRespTime[idx]===null) st.telem.cRespTime[idx] = 9999;
+  }
+  st.cActive = null;
+  document.getElementById('c-overlay').classList.remove('show');
+}
+
+// ─── TOGGLE INITIATIVE ────────────────────────────────────────
+function toggleInit(id){
+  if(st.phase!=='playing') return;
+  const init = st.inits.find(i=>i.id===id);
+  if(!init || st.blocked.has(id) || st.mandatory.has(id)) return;
+  const was = st.selected.has(id);
+  if(!was){
+    if(getTotal()+init.cost > st.budget){ shakeCard(id); return; }
+    st.selected.add(id);
+    if(st.telem.timeToFirst===null) st.telem.timeToFirst=st.elapsed;
+    // track constraint response
+    for(let i=0;i<st.cFiredAt.length;i++){
+      if(st.telem.cRespTime[i]===null||st.telem.cRespTime[i]===9999){
+        st.telem.cRespTime[i]=st.elapsed-st.cFiredAt[i];
+        break;
+      }
+    }
+  } else {
+    st.selected.delete(id);
+    // reversal detection
+    if(st.telem.lastToggle && st.telem.lastToggle.id===id && !st.telem.lastToggle.was) st.telem.reversals++;
+  }
+  st.telem.lastToggle={id,was};
+  st.telem.actionCount++;
+  renderAll();
+}
+
+function shakeCard(id){
+  const el = document.querySelector(`[data-id="${id}"]`);
+  if(!el) return;
+  el.classList.remove('shake-anim');
+  void el.offsetWidth;
+  el.classList.add('shake-anim');
+  setTimeout(()=>el.classList.remove('shake-anim'),400);
+}
+
+// ─── CALC ─────────────────────────────────────────────────────
+let cExpr=''; let cDone=false;
+function toggleCalc(){
+  const p=document.getElementById('calc-panel'); const b=document.getElementById('calc-btn');
+  const open=p.classList.toggle('open'); b.classList.toggle('active',open);
+  if(open) {
+    st.telem.calcOpened=true;
+    document.getElementById('notes-panel').classList.remove('open');
+    document.getElementById('notes-btn').classList.remove('active');
+  }
+}
+function toggleNotes(){
+  const p=document.getElementById('notes-panel'); const b=document.getElementById('notes-btn');
+  const open=p.classList.toggle('open'); b.classList.toggle('active',open);
+  if(open) {
+    st.telem.notesUsed=true;
+    document.getElementById('calc-panel').classList.remove('open');
+    document.getElementById('calc-btn').classList.remove('active');
+    setTimeout(() => document.getElementById('notes-ta').focus(), 100);
+  }
+}
+function cb(v){
+  const d=document.getElementById('calc-display');
+  if(v==='C'){cExpr='';cDone=false;d.textContent='0';return;}
+  if(v==='='){
+    try{const r=Function('"use strict";return('+cExpr+')')();d.textContent=isFinite(r)?(+r.toFixed(4)).toString():'Error';cExpr=isFinite(r)?r.toString():'';cDone=true;}
+    catch{d.textContent='Error';cExpr='';}
+    return;
+  }
+  if(cDone&&/\d/.test(v)){cExpr=v;cDone=false;}else{if(cDone)cDone=false;cExpr+=v;}
+  d.textContent=cExpr;
+}
+
+// ─── SORT ────────────────────────────────────────────────────
+function sortBy(k){
+  st.sortKey = st.sortKey===k ? null : k;
+  st.telem.sortUsed=true;
+  document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('active-sort'));
+  if(st.sortKey) document.getElementById('s-'+k).classList.add('active-sort');
+  renderGrid();
+}
+function sorted(){
+  let a=[...st.inits];
+  if(st.sortKey==='roi') a.sort((x,y)=>y.roi-x.roi);
+  else if(st.sortKey==='cost') a.sort((x,y)=>x.cost-y.cost);
+  else if(st.sortKey==='risk'){const o={Low:0,Medium:1,High:2,Critical:3};a.sort((x,y)=>o[x.risk]-o[y.risk]);}
+  return a;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function getTotal(){ return st.inits.filter(i=>st.selected.has(i.id)).reduce((s,i)=>s+i.cost,0); }
+function getROI(){ return st.inits.filter(i=>st.selected.has(i.id)).reduce((s,i)=>s+i.cost*i.roi/100,0); }
+function catClass(c){ return {Growth:'b-growth',Retention:'b-retention',Infrastructure:'b-infra',Compliance:'b-compliance'}[c]||'b-infra'; }
+
+// ─── RENDER ───────────────────────────────────────────────────
+function renderAll(){ renderGrid(); renderPortfolio(); renderBudget(); renderTimer(); }
+
+
+function renderGrid(){
+  const g=document.getElementById('grid'); g.innerHTML='';
+  sorted().forEach(init=>{
+    const sel=st.selected.has(init.id);
+    const blk=st.blocked.has(init.id);
+    const mand=st.mandatory.has(init.id);
+    const depMet=init.deps.every(d=>st.selected.has(d));
+    const depWarn=sel&&init.deps.length>0&&!depMet;
+    const rColor=init.roi>=70?'#22C55E':init.roi>=45?'#FBBF24':'#94A3B8';
+    const rDot={Low:'rL',Medium:'rM',High:'rH',Critical:'rC'}[init.risk]||'rL';
+    const xp = Math.round((init.roi * 10) + (init.cost / 5000));
+    let cls='card'+(sel?' selected':'')+(blk?' blocked':'')+(mand?' mandatory':'')+(depWarn?' dep-warn':'')+(init.id===9?' new-card':'');
+    g.innerHTML+=`<div class="${cls}" data-id="${init.id}" onclick="toggleInit(${init.id})">
+      <div class="checkmark"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+      <div class="card-top">
+        <div class="card-name">${init.name}</div>
+        <div class="card-badges">
+          <span class="badge" style="background:var(--blue-glow);color:var(--blue);border-color:var(--blue)">+${xp} XP</span>
+          <span class="badge ${catClass(init.cat)}">${init.cat}</span>
+        </div>
+      </div>
+      <div class="card-desc">${init.desc}</div>
+      <div class="card-metrics">
+        <div class="m-item"><span class="m-lbl">Cost</span><span class="m-val">${F(init.cost)}</span></div>
+        <div class="roi-wrap">
+          <div class="roi-header"><span class="m-lbl">ROI</span><span class="m-val" style="font-size:11px;color:${rColor}">${init.roi}%</span></div>
+          <div class="roi-track"><div class="roi-fill" style="width:${init.roi}%;background:${rColor};opacity:${blk?.4:.85}"></div></div>
+        </div>
+        <div class="m-item" style="text-align:right"><span class="m-lbl">Risk</span><span class="m-val" style="font-size:11px"><span class="risk-dot ${rDot}"></span>${init.risk}</span></div>
+      </div>
+      ${init.depNote?`<div class="dep-note">↳ ${init.depNote}</div>`:''}
+      ${depWarn?`<div class="dep-warn">⚠ Dependency unmet — select #${init.deps.join(', #')}</div>`:''}
+    </div>`;
+  });
+}
+
+function renderPortfolio(){
+  const sel=st.inits.filter(i=>st.selected.has(i.id));
+  const list=document.getElementById('port-list');
+  if(sel.length===0){list.innerHTML='<div class="empty-msg">Select initiatives from the left to build your portfolio</div>';return;}
+  const violations=sel.filter(i=>i.deps.length>0&&!i.deps.every(d=>st.selected.has(d)));
+  list.innerHTML=sel.map(i=>`<div class="p-item ${i.mandatory?'mand':''}">
+    <span class="p-name ${i.mandatory?'mand-name':''}">${i.name}</span>
+    <span class="p-cost">${F(i.cost)}</span>
+  </div>`).join('')+(violations.length?`<div class="dep-warning-msg">⚠ Dependency warning: ${violations.map(v=>v.name).join(', ')} require${violations.length===1?'s':''} other initiatives to function.</div>`:'');
+}
+
+function renderBudget(){
+  const total=getTotal(); const roi=getROI();
+  const pct=Math.min(100,(total/st.budget)*100);
+  const over=total>st.budget;
+  document.getElementById('tb-budget-txt').textContent=F(total)+' / '+F(st.budget);
+  document.getElementById('topbar-bar-fill').style.width=pct+'%';
+  document.getElementById('topbar-bar-fill').style.background=over?'var(--red)':pct>85?'var(--green)':'var(--gold)';
+  document.getElementById('bv-total').textContent=F(st.budget);
+  document.getElementById('bv-committed').textContent=F(total);
+  document.getElementById('bv-committed').className='brow-val'+(over?' over':'');
+  const rem=st.budget-total;
+  document.getElementById('bv-remaining').textContent=over?'−'+F(-rem):F(rem);
+  document.getElementById('bv-remaining').className='brow-val'+(over?' over':' ok');
+  document.getElementById('big-fill').style.width=pct+'%';
+  document.getElementById('big-fill').style.background=over?'var(--red)':pct>85?'var(--green)':'var(--gold)';
+  document.getElementById('roi-val').textContent=F(roi);
+  const optRoi = 952500;
+  const powerPct = Math.min(100, (roi / optRoi) * 100);
+  document.getElementById('roi-row').style.setProperty('--p-width', powerPct + '%');
+  const btn=document.getElementById('submit');
+  btn.textContent=over?'OVER BUDGET':'APPROVE & DEPLOY';
+  btn.className=over?'over':'';
+  btn.disabled=over;
+}
+
+// ─── SCORING ─────────────────────────────────────────────────
+function score(){
+  const OPTIMAL=[4,5,8,9];
+  const OPT_ROI=500000*.35+200000*.55+700000*.90+250000*.15; // 952500
+  const total=getTotal(); const roi=getROI(); const over=total>st.budget;
+  const correct=OPTIMAL.filter(id=>st.selected.has(id)).length;
+  const util=total/st.budget;
+
+  let prod=0;
+  prod+=correct*10; // 40 max
+  if(!over&&util>=.85) prod+=10; else if(!over&&util>=.70) prod+=5;
+  if(!over){ const r=Math.min(1,roi/OPT_ROI); prod+=Math.round(r*20); }
+  if(st.selected.has(3)) prod=Math.max(0,prod-15);
+  if(over) prod=Math.max(0,prod-20);
+  prod=Math.min(70,prod);
+
+  let proc=0;
+  const pd=[];
+  if(st.telem.calcOpened){proc+=6;pd.push({l:'Used calculator tool',p:6,m:6,e:true});}
+  else pd.push({l:'Used calculator tool',p:0,m:6,e:false});
+  if(st.telem.notesUsed){proc+=4;pd.push({l:'Used scratch pad / notes',p:4,m:4,e:true});}
+  else pd.push({l:'Used scratch pad / notes',p:0,m:4,e:false});
+  if(st.telem.sortUsed){proc+=4;pd.push({l:'Sorted before allocating',p:4,m:4,e:true});}
+  else pd.push({l:'Sorted before allocating',p:0,m:4,e:false});
+  CONSTRAINTS.forEach((_,i)=>{
+    const fired=st.cFiredAt[i]!==undefined;
+    if(!fired){pd.push({l:`Responded to constraint ${i+1}`,p:0,m:4,e:false,note:'(not yet triggered)'});return;}
+    const rt=st.telem.cRespTime[i];
+    if(rt!==null&&rt<=90){proc+=4;pd.push({l:`Responded to constraint ${i+1} (${rt}s)`,p:4,m:4,e:true});}
+    else if(rt!==null&&rt<=180){proc+=2;pd.push({l:`Responded to constraint ${i+1} (${rt}s)`,p:2,m:4,e:true});}
+    else pd.push({l:`Responded to constraint ${i+1} promptly`,p:0,m:4,e:false});
+  });
+  const rev=Math.max(0,st.telem.reversals-2);
+  if(rev>0){const pen=rev*2;proc=Math.max(0,proc-pen);pd.push({l:`Excessive reversals (${st.telem.reversals})`,p:-pen,m:0,e:false});}
+  proc=Math.max(0,Math.min(30,proc));
+
+  return {prod,proc,total:Math.min(100,prod+proc),pd,correct,OPTIMAL,roi,OPT_ROI,over,util};
+}
+
+function observations(sc){
+  const o=[];
+  if(st.telem.calcOpened) o.push({t:'pos',x:'Used the calculator — evidence of data-driven analysis over gut-feel allocation.'});
+  else o.push({t:'neg',x:'Calculator unused — all quantitative trade-offs were assessed mentally, increasing error risk.'});
+  if(st.telem.sortUsed) o.push({t:'pos',x:'Sorted initiatives before committing — structured exploration before allocation.'});
+  else o.push({t:'neu',x:'Did not sort or organise initiatives — may have evaluated in default order.'});
+  if(st.selected.has(9)) o.push({t:'pos',x:'Included the mandatory Security Audit — compliance requirement correctly identified.'});
+  else o.push({t:'neg',x:'Did not include Security Audit — missed a non-negotiable board-mandated requirement.'});
+  if(st.selected.has(3)) o.push({t:'neg',x:'Included the legally blocked AI Engine — failed to remove a blocked initiative.'});
+  const hasDW=st.selected.has(4), hasMkt=st.selected.has(8);
+  if(hasDW&&hasMkt) o.push({t:'pos',x:'Identified the Data Warehouse → Market Expansion dependency and leveraged it for maximum ROI.'});
+  else if(hasMkt&&!hasDW) o.push({t:'neg',x:'Selected Market Expansion without Data Warehouse — dependency violated; initiative would fail to execute.'});
+  else o.push({t:'neu',x:'Did not pursue Market Expansion (90% ROI). Conservative choice — leaves significant upside on the table.'});
+  if(!sc.over&&sc.util>=.90) o.push({t:'pos',x:`Budget utilisation at ${Math.round(sc.util*100)}% — efficient capital deployment.`});
+  else if(!sc.over&&sc.util<.72) o.push({t:'neu',x:`Budget utilisation at ${Math.round(sc.util*100)}% — substantial capital left undeployed.`});
+  if(st.telem.notesUsed) o.push({t:'pos',x:'Used the scratch pad — suggests structured thinking process before acting.'});
+  return o;
+}
+
+// ─── SUBMIT / END ─────────────────────────────────────────────
+function submitGame(){if(getTotal()>st.budget)return;endGame(true);}
+function endGame(manual){
+  if(st.phase==='ended') return;
+  st.phase='ended';
+  if(ticker) clearInterval(ticker);
+  const sc=score(); const obs=observations(sc);
+  
+  let vcls, vtxt, rank, rankColor, reason;
+  if(sc.total>=75){ 
+    rank='PASS'; rankColor='var(--green)'; vcls='v-go'; 
+    vtxt='STRATEGIC CLEARANCE GRANTED'; 
+    reason='GOING FORWARD FOR NEXT LEVEL..';
+  }
+  else if(sc.total>=50){ 
+    rank='HOLD'; rankColor='var(--gold)'; vcls='v-watch'; 
+    vtxt='REVIEW NEEDED'; 
+    reason='Candidate demonstrated foundational logic but missed key optimal dependencies (Yield < 80%).';
+  }
+  else { 
+    rank='FAIL'; rankColor='var(--red)'; vcls='v-no'; 
+    vtxt='MISSION TERMINATED'; 
+    reason=sc.over?'Reason: Critical failure — resource ceiling exceeded.':'Reason: Strategic yield insufficient for operational viability.';
+  }
+
+  document.getElementById('end-sub').textContent=`Mission Code: SOLVE-01 // ${manual?'Operator Extracted':'Time Exhaustion'} // Final ROI: ${F(sc.roi)}`;
+  
+  const verdictEl = document.getElementById('verdict-bar');
+  verdictEl.className='verdict-bar '+vcls;
+  verdictEl.innerHTML=`<div style="font-size:10px;opacity:0.8;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.15em;font-weight:700;">Evaluation Outcome</div>
+                       <div style="font-size:38px;font-weight:200;color:${rankColor};margin-bottom:5px;letter-spacing:0.1em;">${rank}</div>
+                       <div style="font-size:14px;font-weight:600;margin-bottom:4px;">${vtxt}</div>
+                       <div style="font-size:12px;opacity:0.9;font-weight:300;">${reason}</div>`;
+
+  function ring(val,max,color,lbl){
+    const pct=val/max; const r=34; const circ=2*Math.PI*r; const dash=pct*circ;
+    return `<div class="sring-wrap"><div class="sring"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="${r}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"/><circle cx="40" cy="40" r="${r}" fill="none" stroke="${color}" stroke-width="6" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-linecap="round" style="transition: stroke-dasharray 1s ease-out;"/></svg><div class="sring-val" style="font-weight:200;font-size:20px;">${Math.round(val)}</div></div><div class="sring-lbl" style="color:var(--text2);font-weight:400;font-size:9px;">${lbl}</div></div>`;
+  }
+
+  document.getElementById('score-row').innerHTML=
+    ring(sc.total,100,rankColor,'Overall')+
+    ring(sc.prod,70,'var(--blue)','Productivity')+
+    ring(sc.proc,30,'var(--gold)','Efficiency');
+
+  const prodRows=[
+    {l:`Optimal Initiatives (${sc.correct}/4)`,p:sc.correct*10,m:40, c:'var(--blue)'},
+    {l:'Budget Utilization Efficiency',p:!sc.over&&sc.util>=.85?10:!sc.over&&sc.util>=.70?5:0,m:10, c:'var(--green)'},
+    {l:'ROI Yield Proximity',p:Math.min(20,Math.round((sc.roi/sc.OPT_ROI)*20)),m:20, c:'var(--gold)'},
+  ];
+
+  document.getElementById('breakdown').innerHTML=`
+  <div class="bc" style="margin-bottom:20px;"><div class="bc-title">Scoring Matrix: Selection & Yield</div>
+  ${prodRows.map(r=>`<div class="brow2"><span class="brow2-lbl">${r.l}</span><div class="brow2-bar"><div class="brow2-fill" style="width:${r.m>0?(r.p/r.m*100):0}%;background:${r.c}"></div></div><span class="brow2-pts ${r.p>0?'pts-earn':'pts-miss'}">${r.p}/${r.m}</span></div>`).join('')}
+  </div>
+  <div class="bc"><div class="bc-title">Scoring Matrix: Tactical Execution</div>
+  ${sc.pd.map(r=>`<div class="brow2"><span class="brow2-lbl">${r.l}${r.note?' '+r.note:''}</span><div class="brow2-bar"><div class="brow2-fill" style="width:${r.m>0?Math.max(0,r.p)/r.m*100:0}%;background:var(--blue)"></div></div><span class="brow2-pts ${r.p>0?'pts-earn':'pts-miss'}">${r.p>0?r.p:0}/${r.m>0?r.m:0}</span></div>`).join('')}
+  </div>`;
+
+  document.getElementById('observations').innerHTML=`<div class="obs-card"><div class="obs-title">Mission Intelligence & Observations</div>
+  ${obs.map(o=>`<div class="obs-item"><span class="obs-icon ${o.t}">${o.t==='pos'?'✓':o.t==='neg'?'!':'?'}</span><span>${o.x}</span></div>`).join('')}
+  </div>`;
+
+  document.getElementById('end-overlay').classList.add('show');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+renderAll();
+</script>
+</body>
+</html>
