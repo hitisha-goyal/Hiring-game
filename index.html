@@ -131,19 +131,24 @@ h1, h2, h3, #logo, .panel-title, #end-title, #intro-title { font-family: 'Outfit
 #submit.over { background: linear-gradient(135deg, var(--red), #DC2626); box-shadow: 0 4px 15px var(--red-glow); cursor: not-allowed; }
 
 /* END SCREEN IMPROVEMENTS */
-#end-overlay { position: fixed; inset: 0; background: radial-gradient(circle at 50% 0%, #002b3d 0%, var(--bg) 100%); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 10px; overflow: hidden; }
+#end-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
 #end-overlay.show { display: flex; animation: fadeIn 0.4s ease-out; }
-#end-content { max-width: 600px; width: 95%; background: #002b3d; border: 1px solid var(--border-hi); border-radius: 1px; padding: 30px; box-shadow: 0 0 100px rgba(0,0,0,0.8); transform: scale(0.85); transform-origin: top center; max-height: 98vh; overflow-y: auto; text-align: left; }
-#end-title { font-size: 24px; color: var(--text); margin-bottom: 2px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 300; }
-.verdict-bar { font-size: 13px; font-weight: 500; padding: 20px; border-radius: 1px; margin: 20px 0; border: 1px solid currentColor; text-align: left; }
-.v-go { background: rgba(0, 178, 169, 0.05); color: var(--green); border-left: 4px solid var(--green); }
-.v-no { background: rgba(255, 82, 82, 0.05); color: var(--red); border-left: 4px solid var(--red); }
-.v-watch { background: rgba(212, 175, 55, 0.05); color: var(--gold); border-left: 4px solid var(--gold); }
+#end-content { max-width: 1100px; width: 100%; background: var(--s1); border: 1px solid var(--border-hi); border-radius: 24px; padding: 40px 50px; box-shadow: 0 20px 80px rgba(0,0,0,0.8), inset 0 0 40px rgba(59,130,246,0.1); transform: scale(0.95); max-height: 95vh; overflow-y: auto; text-align: left; display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; }
+#end-title { font-size: 32px; color: var(--text); margin-bottom: 5px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 800; line-height: 1.1; }
+.overline { font-size: 11px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 8px; }
+.verdict-bar { font-size: 13px; font-weight: 500; padding: 24px; border-radius: 12px; margin: 30px 0; border: 1px solid currentColor; text-align: left; background: rgba(0,0,0,0.3); }
+.v-go { color: var(--green); border-left: 4px solid var(--green); box-shadow: inset 20px 0 40px -20px var(--green-glow); }
+.v-no { color: var(--red); border-left: 4px solid var(--red); box-shadow: inset 20px 0 40px -20px var(--red-glow); }
+.v-watch { color: var(--gold); border-left: 4px solid var(--gold); box-shadow: inset 20px 0 40px -20px var(--gold-glow); }
+
+.end-left { display: flex; flex-direction: column; }
+.end-right { display: flex; flex-direction: column; gap: 24px; }
 
 .sring-val { font-size: 20px; font-weight: 200; color: var(--text); }
-.bc { background: var(--s1); border: 1px solid var(--border); border-radius: 1px; padding: 12px; }
-.brow2-bar { height: 4px; border-radius: 1px; }
-.brow2-fill { box-shadow: 0 0 10px currentColor; }
+.bc { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+.bc-title { font-size: 12px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 20px; }
+.brow2-bar { height: 6px; border-radius: 10px; background: var(--s2); position: relative; overflow: hidden; }
+.brow2-fill { box-shadow: 0 0 10px currentColor; height: 100%; border-radius: 10px; }
 
 /* CARD COMPONENTS */
 .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px}
@@ -387,17 +392,21 @@ h1, h2, h3, #logo, .panel-title, #end-title, #intro-title { font-family: 'Outfit
 <!-- END SCREEN -->
 <div id="end-overlay">
   <div id="end-content">
-    <div id="end-hdr">
-      <div class="overline">Mission Complete</div>
-      <div id="end-title">Performance Debrief</div>
-      <div id="end-sub"></div>
+    <div class="end-left">
+      <div id="end-hdr">
+        <div class="overline">Mission Complete</div>
+        <div id="end-title">Performance Debrief</div>
+        <div id="end-sub" style="font-size:12px;color:var(--text3);margin-top:8px;"></div>
+      </div>
+      <div id="verdict-bar"></div>
+      <div id="score-row"></div>
+      <div style="text-align:center;margin-top:auto;padding-top:30px">
+        <button onclick="location.reload()" style="padding:16px 40px;background:var(--blue);border:none;border-radius:12px;color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;box-shadow: 0 5px 20px var(--blue-glow); width: 100%;">Deploy Another Mission</button>
+      </div>
     </div>
-    <div id="verdict-bar"></div>
-    <div id="score-row"></div>
-    <div id="breakdown"></div>
-    <div id="observations"></div>
-    <div style="text-align:center;margin-top:30px">
-      <button onclick="location.reload()" style="padding:12px 30px;background:var(--s2);border:1px solid var(--border-hi);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;">Restart Mission</button>
+    <div class="end-right">
+      <div id="breakdown"></div>
+      <div id="observations"></div>
     </div>
   </div>
 </div>
